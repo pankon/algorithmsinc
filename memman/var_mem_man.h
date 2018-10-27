@@ -19,7 +19,7 @@ VarMemMan_t *VarMemManCreateOrLoadDb(char *filename, size_t magic, size_t file_s
 
 void VarMemManDestroy(VarMemMan_t *mem_man);
 
-void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size);
+void *VarMemManAlloc(VarMemMan_t *mem_man, int size);
 
 void VarMemManCommit(VarMemMan_t *mem_man, void *data);
 

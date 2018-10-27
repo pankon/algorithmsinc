@@ -20,6 +20,35 @@ struct sample_struct_2
 	char data[10];
 };
 
+void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete)
+{
+	int n = 0;
+	void *data = NULL;
+
+	n = strlen(string);
+
+	printf("string: %s, do_delete = %d\n", string, do_delete);
+	data = VarMemManAlloc(mem_man, n);
+	if (NULL != data)
+	{
+		memset(data, 0, n);
+		strcpy(data, string);
+		printf("loading data into object: %s\n", data);
+		VarMemManCommit(mem_man, data);
+	}
+
+	if (do_delete)
+	{
+		VarMemManDelete(mem_man, data);
+	}
+	else
+	{
+		VarMemManFree(mem_man, data); // VarMemManFree
+	}
+	
+	data = NULL;
+}
+
 int main(int argc, char **argv)
 {
 	VarMemMan_t *mem_man = NULL;
@@ -35,49 +64,9 @@ int main(int argc, char **argv)
 
 	mem_man = VarMemManCreateOrLoadDb(argv[1], 0x21726176, FILE_SIZE);
 
-	/*data_0 = VarMemManAlloc(mem_man, sizeof(struct sample_struct));
-	if (NULL == data_0)
-	{
-		printf("could not alloc sample_struct\n");
-	}
-	else
-	{
-		strncpy(data_0->data, "this is a long string", 20); 
-		VarMemManCommit(mem_man, data_0);
-	}
-	VarMemManFree(mem_man, data_0);
-	*/
-
-	{
-		int i = 0;
-		int n = strlen(argv[1]);
-
-		for (i = 0; 3 > i; ++i)
-		{
-			printf("i: %d\n", i);
-			data = VarMemManAlloc(mem_man, n + i);
-			if (NULL != data)
-			{
-				memset(data, 0, n + i);
-				strcpy(data, argv[1]);
-				printf("loading data into object: %s\n", data);
-				VarMemManCommit(mem_man, data);
-				VarMemManCommit(mem_man, data);
-			}
-			if (i % 2 == 0)
-			{
-				VarMemManFree(mem_man, data);
-			}
-			else
-			{
-				VarMemManDelete(mem_man, data);
-			}
-			
-			data = NULL;
-		}
-	}
-
-	
+	TestCommitAndDelete(mem_man, "duck", 0);
+	TestCommitAndDelete(mem_man, "duck", 1);
+	TestCommitAndDelete(mem_man, "duck", 0);	
 	
 	VarMemManDestroy(mem_man);
 	mem_man = NULL;

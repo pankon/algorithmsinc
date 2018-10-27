@@ -122,7 +122,7 @@ VarMemMan_t *VarMemManCreateOrLoadDb(char *filename, size_t magic, size_t file_s
             return (NULL);
         }
 
-        stub_data.size = file_size - sizeof(head_t);
+        stub_data.size = file_size - sizeof(head_t) - sizeof(data_t);
         stub_data.next = NULL_TERM;
         
         if (WRITE_SUCCESS != IoWrite(fp, sizeof(head_t), &stub_data, 
@@ -176,7 +176,7 @@ IO_STATUS VarMemManWriteHeader(VarMemMan_t *mem_man)
     return (IoWrite(mem_man->fp, 0, &(mem_man->header), sizeof(head_t), NULL_TERM));
 }
 
-void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
+void *VarMemManAlloc(VarMemMan_t *mem_man, int size)
 {
     data_t last_free = {0};
     data_t current_free = {0};
@@ -187,6 +187,7 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
     unsigned int current_allocated_offset = 0;
     unsigned int new_free_offset = 0;
     user_data_t *user_data = NULL;
+    int split_size = 0;
 
     int did_update_in_middle = 0;
     int did_split = 0;
@@ -207,6 +208,7 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
     last_free.next = NULL_TERM;
     IoRead(mem_man->fp, mem_man->header.free, &current_free, sizeof(data_t), NULL_TERM);
 
+    printf("current free: ");
     PrintDataSegment(&current_free);
 
     while (current_free.size < size && NULL_TERM != current_free.next)
@@ -218,7 +220,7 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
 
         did_update_in_middle = 1;
         last_free_offset = last_free.next;
-        PrintDataSegment(&last_free);
+        printf("last_free: "); PrintDataSegment(&last_free);
         last_free = current_free;
         
         if (READ_SUCCESS != IoRead(mem_man->fp, last_free.next, &current_free, 
@@ -228,6 +230,7 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
             return (NULL);
         }
 
+        printf("current free: ");
         PrintDataSegment(&current_free);
     }
 
@@ -237,13 +240,15 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, size_t size)
         return (NULL);
     }
 
+    split_size = current_free.size - (sizeof(data_t) + size);
     /* split memory if large enough, otherwise return whole block */
-    if (current_free.size - ((sizeof(data_t) * 2) + size) > 0)
+    if (split_size > 0)
     {
+        printf("doing split into: %x & %x\n", size, split_size);
         did_split = 1;
 
         /* update current free size after split */
-        current_free.size = current_free.size - (sizeof(data_t) + size);
+        current_free.size = split_size;
         new_allocated.size = size;
         new_allocated.is_allocated = 1;
         new_allocated.next = mem_man->header.allocated;
