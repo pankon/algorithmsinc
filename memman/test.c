@@ -36,6 +36,10 @@ void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete)
 		printf("loading data into object: %s\n", data);
 		VarMemManCommit(mem_man, data);
 	}
+	else
+	{
+		printf("alloc failed here\n");
+	}
 
 	if (do_delete)
 	{
@@ -66,7 +70,8 @@ int main(int argc, char **argv)
 
 	TestCommitAndDelete(mem_man, "duck", 0);
 	TestCommitAndDelete(mem_man, "duck", 1);
-	TestCommitAndDelete(mem_man, "duck", 0);	
+	TestCommitAndDelete(mem_man, "duck12", 1);	
+	TestCommitAndDelete(mem_man, "duck1", 0);	
 	
 	VarMemManDestroy(mem_man);
 	mem_man = NULL;

@@ -15,6 +15,12 @@ typedef struct VarMemMan
 	size_t file_size;
 } VarMemMan_t;
 
+typedef enum
+{
+	ALLOC_SUCCESS,
+	ALLOC_FAIL
+} VARMEMMAN_STATUS;
+
 VarMemMan_t *VarMemManCreateOrLoadDb(char *filename, size_t magic, size_t file_size);
 
 void VarMemManDestroy(VarMemMan_t *mem_man);
