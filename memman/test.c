@@ -68,10 +68,10 @@ int main(int argc, char **argv)
 
 	mem_man = VarMemManCreateOrLoadDb(argv[1], 0x21726176, FILE_SIZE);
 
-	TestCommitAndDelete(mem_man, "duck", 0);
-	TestCommitAndDelete(mem_man, "duck", 1);
-	TestCommitAndDelete(mem_man, "duck12", 1);	
-	TestCommitAndDelete(mem_man, "duck1", 0);	
+	TestCommitAndDelete(mem_man, "nana rules", 0);
+	TestCommitAndDelete(mem_man, "deleted", 1);
+	TestCommitAndDelete(mem_man, "okey", 0);	
+	TestCommitAndDelete(mem_man, "dokey", 0);
 	
 	VarMemManDestroy(mem_man);
 	mem_man = NULL;
