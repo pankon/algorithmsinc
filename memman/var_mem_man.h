@@ -28,6 +28,7 @@ void VarMemManDestroy(VarMemMan_t *mem_man);
 void *VarMemManAlloc(VarMemMan_t *mem_man, int size);
 
 void VarMemManCommit(VarMemMan_t *mem_man, void *data);
+void VarMemManUpdate(VarMemMan_t *mem_man, void *data);
 
 void VarMemManFree(VarMemMan_t *mem_man, void *data);
 void VarMemManDelete(VarMemMan_t *mem_man, void *data);

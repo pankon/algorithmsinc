@@ -374,6 +374,20 @@ void VarMemManCommit(VarMemMan_t *mem_man, void *data)
             user_data->data, user_data->size, NULL_TERM);
 }
 
+void VarMemManUpdate(VarMemMan_t *mem_man, void *data)
+{
+    user_data_t *user_data = NULL;
+    if (NULL == mem_man || data == NULL)
+    {
+        return;
+    }
+
+    user_data = VarMemManGetUserDataFromPtr(data);
+
+    IoRead(mem_man->fp, user_data->offset + sizeof(data_t), 
+            user_data->data, user_data->size, NULL_TERM);
+}
+
 
 
 void VarMemManFree(VarMemMan_t *mem_man, void *data)
