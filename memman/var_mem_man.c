@@ -30,6 +30,7 @@ typedef struct user_data
 {
     unsigned int offset;
     unsigned int size;
+    size_t magic;
     char data[1];
 } user_data_t;
 
@@ -225,9 +226,14 @@ VARMEMMAN_STATUS VarMemManFindNextFree(VarMemMan_t *mem_man, int size,
 }
 
 
-void *VarMemManUserDataCreate(unsigned int offset, int size)
+void *VarMemManUserDataCreate(VarMemMan_t *mem_man, unsigned int offset, int size)
 {
     user_data_t *user_data = NULL;
+
+    if (NULL == mem_man)
+    {
+        return (NULL);
+    }
 
     if (NULL == (user_data = malloc(sizeof(user_data_t) + size)))
     {
@@ -236,6 +242,7 @@ void *VarMemManUserDataCreate(unsigned int offset, int size)
 
     user_data->offset = offset;
     user_data->size = size;
+    user_data->magic = mem_man->header.magic;
 
     return (user_data->data);
 }
@@ -347,17 +354,26 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, int size)
         return (NULL);
     }
 
-    return (VarMemManUserDataCreate(offset, size));
+    return (VarMemManUserDataCreate(mem_man, offset, size));
 }
 
-static user_data_t *VarMemManGetUserDataFromPtr(void *data)
+static user_data_t *VarMemManGetUserDataFromPtr(VarMemMan_t *mem_man, void *data)
 {
-    if (data == NULL)
+    user_data_t *user_data = NULL;
+
+    if (NULL == data || NULL == mem_man)
     {
-        return ((user_data_t *)NULL);
+        return (user_data);
     }
 
-    return ((user_data_t *)((size_t)data - (sizeof(unsigned int) * 2)));
+    user_data = (user_data_t *)(((size_t)data - ((sizeof(unsigned int) * 2 + sizeof(size_t)))));
+
+    if (mem_man->header.magic != user_data->magic)
+    {
+        return (NULL);
+    }
+
+    return (user_data);
 }
 
 void VarMemManCommit(VarMemMan_t *mem_man, void *data)
@@ -368,7 +384,7 @@ void VarMemManCommit(VarMemMan_t *mem_man, void *data)
         return;
     }
 
-    user_data = VarMemManGetUserDataFromPtr(data);
+    user_data = VarMemManGetUserDataFromPtr(mem_man, data);
 
     IoWrite(mem_man->fp, user_data->offset + sizeof(data_t), 
             user_data->data, user_data->size, NULL_TERM);
@@ -382,7 +398,7 @@ void VarMemManUpdate(VarMemMan_t *mem_man, void *data)
         return;
     }
 
-    user_data = VarMemManGetUserDataFromPtr(data);
+    user_data = VarMemManGetUserDataFromPtr(mem_man, data);
 
     IoRead(mem_man->fp, user_data->offset + sizeof(data_t), 
             user_data->data, user_data->size, NULL_TERM);
@@ -398,7 +414,7 @@ void VarMemManFree(VarMemMan_t *mem_man, void *data)
         return;
     }
 
-    user_data = VarMemManGetUserDataFromPtr(data);
+    user_data = VarMemManGetUserDataFromPtr(mem_man, data);
 
     free(user_data);
     user_data = NULL;
@@ -413,7 +429,7 @@ void VarMemManDeleteWipe(VarMemMan_t *mem_man, void *data, int wipe)
         return;
     }
 
-    user_data = VarMemManGetUserDataFromPtr(data);
+    user_data = VarMemManGetUserDataFromPtr(mem_man, data);
 
     if (READ_FAIL == VarMemManReadHeader(mem_man))
     {
