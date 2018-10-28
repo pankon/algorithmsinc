@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef __IO_H__
-#define __IO_H__
+#ifndef __SAFE_IO_H__
+#define __SAFE_IO_H__
 
 #include <stdio.h> /* fread, fwrite */
 
@@ -26,4 +26,4 @@ IO_STATUS IoWrite(FILE *fp, size_t offset, void *memory, size_t size, size_t nul
 IO_STATUS IoDoesFileExist(char *filename);
 
 
-#endif /* __IO_H__ */
+#endif /* __SAFE_IO_H__ */
