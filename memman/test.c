@@ -33,7 +33,7 @@ void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete)
 	{
 		memset(data, 0, n);
 		strcpy(data, string);
-		printf("loading data into object: %s\n", data);
+		printf("loading data into object: %s\n", (char *)data);
 		VarMemManCommit(mem_man, data);
 	}
 	else
