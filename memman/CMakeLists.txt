@@ -1,0 +1,5 @@
+cmake_minimum_required (VERSION 2.6)
+project (VarMemMan)
+add_library(var_mem_man safe_seek.c safe_io.c var_mem_man.c)
+add_executable(test test.c)
+target_link_libraries(test var_mem_man)
