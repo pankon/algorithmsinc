@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> /* access */
+#include <unistd.h> /* access, F_OK - check if file exists */
 
 #include "io.h"
 #include "var_mem_man.h"
@@ -253,6 +253,12 @@ IO_STATUS VarMemManWriteData(VarMemMan_t *mem_man, unsigned int offset, data_t *
     return (IoWrite(mem_man->fp, offset, data, sizeof(data_t), NULL_TERM));
 }
 
+IO_STATUS VarMemManReadData(VarMemMan_t *mem_man, unsigned int offset, data_t *data)
+{
+    /* your responsibility to null check */
+    return (IoRead(mem_man->fp, offset, data, sizeof(data_t), NULL_TERM));
+}
+
 VARMEMMAN_STATUS VarMemManSplitMemory(VarMemMan_t *mem_man, unsigned int offset, int size, 
                                       data_t *current_free)
 {
@@ -376,6 +382,38 @@ static user_data_t *VarMemManGetUserDataFromPtr(VarMemMan_t *mem_man, void *data
     return (user_data);
 }
 
+unsigned int VarMemManGetOffset(VarMemMan_t *mem_man, void *data)
+{
+    user_data_t *user_data = NULL;
+    if (NULL == mem_man || data == NULL)
+    {
+        return -1;
+    }
+
+    user_data = VarMemManGetUserDataFromPtr(mem_man, data);
+
+    return user_data->offset;
+}
+
+void *VarMemManLoadFromOffset(VarMemMan_t *mem_man, unsigned int offset)
+{
+    data_t current = {0};
+    user_data_t *user_data = NULL;
+
+    if (READ_SUCCESS != VarMemManReadData(mem_man, offset - sizeof(data_t), &current))
+    {
+        return (NULL);
+    }
+
+    user_data = VarMemManUserDataCreate(mem_man, offset, current.size);
+    if (NULL == user_data)
+    {
+        return (NULL);
+    }
+
+    return (user_data->data);
+}
+
 void VarMemManCommit(VarMemMan_t *mem_man, void *data)
 {
     user_data_t *user_data = NULL;
@@ -399,9 +437,13 @@ void VarMemManUpdate(VarMemMan_t *mem_man, void *data)
     }
 
     user_data = VarMemManGetUserDataFromPtr(mem_man, data);
+    if (NULL == user_data)
+    {
+        return;
+    }
 
-    IoRead(mem_man->fp, user_data->offset + sizeof(data_t), 
-            user_data->data, user_data->size, NULL_TERM);
+    IoRead(mem_man->fp, user_data->offset, user_data->data, 
+           user_data->size, NULL_TERM);
 }
 
 

@@ -30,6 +30,9 @@ void *VarMemManAlloc(VarMemMan_t *mem_man, int size);
 void VarMemManCommit(VarMemMan_t *mem_man, void *data);
 void VarMemManUpdate(VarMemMan_t *mem_man, void *data);
 
+unsigned int VarMemManGetOffset(VarMemMan_t *mem_man, void *data);
+void *VarMemManLoadFromOffset(VarMemMan_t *mem_man, unsigned int offset);
+
 void VarMemManFree(VarMemMan_t *mem_man, void *data);
 void VarMemManDelete(VarMemMan_t *mem_man, void *data);
 void VarMemManDeleteWipe(VarMemMan_t *mem_man, void *data, int wipe);
