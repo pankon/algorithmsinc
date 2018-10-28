@@ -1,5 +1,5 @@
 /*
- * Btree
+ * Btree 2-3-4 tree
  */
 
 typedef struct btree_node
@@ -8,10 +8,8 @@ typedef struct btree_node
 
 	int nChildren;
 	struct btree_node *children;
-	
-	int nElements;
-	size_t eSize;
-	void *array;
+
+	void *data;
 } btree_node_t;
 
 typedef struct btree
@@ -22,3 +20,4 @@ typedef struct btree
 
 	btree_node_t *root;
 } btree_t;
+

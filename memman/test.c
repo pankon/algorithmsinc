@@ -20,7 +20,7 @@ struct sample_struct_2
 	char data[10];
 };
 
-void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete)
+void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete, int do_wipe)
 {
 	int n = 0;
 	void *data = NULL;
@@ -43,7 +43,7 @@ void TestCommitAndDelete(VarMemMan_t *mem_man, char *string, int do_delete)
 
 	if (do_delete)
 	{
-		VarMemManDelete(mem_man, data);
+		VarMemManDeleteWipe(mem_man, data, do_wipe);
 	}
 	else
 	{
@@ -68,10 +68,10 @@ int main(int argc, char **argv)
 
 	mem_man = VarMemManCreateOrLoadDb(argv[1], 0x21726176, FILE_SIZE);
 
-	TestCommitAndDelete(mem_man, "nana rules", 0);
-	TestCommitAndDelete(mem_man, "deleted", 1);
-	TestCommitAndDelete(mem_man, "okey", 0);	
-	TestCommitAndDelete(mem_man, "dokey", 0);
+	TestCommitAndDelete(mem_man, "nana rules", 0, 0);
+	TestCommitAndDelete(mem_man, "deleted", 1, 1);
+	TestCommitAndDelete(mem_man, "okey", 0, 0);	
+	TestCommitAndDelete(mem_man, "dokey", 0, 0);
 	
 	VarMemManDestroy(mem_man);
 	mem_man = NULL;
