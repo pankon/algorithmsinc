@@ -58,6 +58,7 @@ void PrintDataSegment(data_t *data)
            data->size, data->next, data->is_allocated);
 }
 
+{
 VarMemMan_t *VarMemManCreateOrLoadDb(char *filename, size_t magic, size_t file_size)
 {
     FILE *fp = NULL;
