@@ -4,7 +4,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h> /* access, F_OK - check if file exists */
 
 #include "safe_io.h"
 #include "var_mem_man.h"
@@ -76,7 +75,7 @@ VarMemMan_t *VarMemManCreateOrLoadDb(char *filename, size_t magic, size_t file_s
     mem_man->fp = NULL;
     
 
-    if (-1 != access(filename, F_OK))
+    if (FILE_EXISTS == IoDoesFileExist(filename))
     {
         printf("opening existing\n");
         fp = fopen(filename, "rb+");
