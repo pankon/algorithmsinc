@@ -2,8 +2,8 @@
  *
  */
 
-#ifndef __SEEK_H__
-#define __SEEK_H__
+#ifndef __SAFE_SEEK_H__
+#define __SAFE_SEEK_H__
 
 #include <stdio.h>
 
@@ -15,4 +15,4 @@ typedef enum
 
 SEEK_STATUS Seek(FILE *fp, size_t offset, size_t null_term);
 
-#endif
+#endif /* __SAFE_SEEK_H__ */

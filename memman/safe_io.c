@@ -14,7 +14,7 @@
 #include <windows.h>
 #endif
 
-#include "seek.h"
+#include "safe_seek.h"
 #include "safe_io.h"
 
 IO_STATUS IoRead(FILE *fp, size_t offset, void *memory, size_t size, size_t null_term)

@@ -1,5 +1,5 @@
 
-#include "seek.h"
+#include "safe_seek.h"
 
 SEEK_STATUS Seek(FILE *fp, size_t offset, size_t null_term)
 {
