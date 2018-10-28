@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <unistd.h> /* access, F_OK - check if file exists */
 
-#include "io.h"
+#include "safe_io.h"
 #include "var_mem_man.h"
 
 #define NULL_TERM 0xffffffff

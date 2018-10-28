@@ -5,6 +5,8 @@
 #ifndef __IO_H__
 #define __IO_H__
 
+#include <stdio.h> /* fread, fwrite */
+
 typedef enum
 {
 	READ_SUCCESS,

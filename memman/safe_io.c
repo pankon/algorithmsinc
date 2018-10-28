@@ -5,7 +5,7 @@
 #include <stdio.h> /* fread, fwrite */
 
 #include "seek.h"
-#include "io.h"
+#include "safe_io.h"
 
 IO_STATUS IoRead(FILE *fp, size_t offset, void *memory, size_t size, size_t null_term)
 {
